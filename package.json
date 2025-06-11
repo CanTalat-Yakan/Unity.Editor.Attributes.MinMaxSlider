@@ -1,0 +1,16 @@
+{
+    "name": "com.unityessentials.minmaxsliderattribute",
+    "version": "1.0.0",
+    "displayName": "UnityEssentials MinMaxSliderAttribute",
+    "description": "This is a part of the UnityEssentials Ecosystem",
+    "unity": "2022.1",
+    "documentationUrl": "",
+    "changelogUrl": "",
+    "licensesUrl": "",
+    "keywords": [],
+    "author": {
+        "name": "Unity Essentials",
+        "email": "",
+        "url": ""
+    }
+}
