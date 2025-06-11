@@ -8,14 +8,16 @@ namespace UnityEssentials
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (property.propertyType != SerializedPropertyType.Vector2)
+            bool isVector2 = property.propertyType == SerializedPropertyType.Vector2;
+            bool isVector2Int = property.propertyType == SerializedPropertyType.Vector2Int;
+
+            if (!isVector2 && !isVector2Int)
             {
-                EditorGUI.HelpBox(position, "MinMaxSlider attribute only supports Vector2 fields.", MessageType.Error);
+                EditorGUI.HelpBox(position, "MinMaxSlider attribute only supports Vector2 or Vector2Int fields.", MessageType.Error);
                 return;
             }
 
             var propertyAttribute = this.attribute as MinMaxSliderAttribute;
-            var range = property.vector2Value;
 
             var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, position.height);
             var minFieldPosition = new Rect(position.x + EditorGUIUtility.labelWidth, position.y, 40, position.height);
@@ -24,15 +26,40 @@ namespace UnityEssentials
 
             EditorGUI.LabelField(labelPosition, label);
 
-            var minValue = EditorGUI.FloatField(minFieldPosition, range.x);
-            var maxValue = EditorGUI.FloatField(maxFieldPosition, range.y);
+            if (isVector2)
+            {
+                var range = property.vector2Value;
+                float minValue = range.x;
+                float maxValue = range.y;
 
-            EditorGUI.MinMaxSlider(sliderPosition, ref minValue, ref maxValue, propertyAttribute.Min, propertyAttribute.Max);
+                minValue = EditorGUI.FloatField(minFieldPosition, minValue);
+                maxValue = EditorGUI.FloatField(maxFieldPosition, maxValue);
 
-            minValue = Mathf.Clamp(minValue, propertyAttribute.Min, maxValue);
-            maxValue = Mathf.Clamp(maxValue, minValue, propertyAttribute.Max);
+                EditorGUI.MinMaxSlider(sliderPosition, ref minValue, ref maxValue, propertyAttribute.Min, propertyAttribute.Max);
 
-            property.vector2Value = new Vector2(minValue, maxValue);
+                minValue = Mathf.Clamp(minValue, propertyAttribute.Min, maxValue);
+                maxValue = Mathf.Clamp(maxValue, minValue, propertyAttribute.Max);
+
+                property.vector2Value = new Vector2(minValue, maxValue);
+            }
+            else // Vector2Int
+            {
+                var range = property.vector2IntValue;
+                int minValue = range.x;
+                int maxValue = range.y;
+
+                minValue = EditorGUI.IntField(minFieldPosition, minValue);
+                maxValue = EditorGUI.IntField(maxFieldPosition, maxValue);
+
+                float fMin = minValue;
+                float fMax = maxValue;
+                EditorGUI.MinMaxSlider(sliderPosition, ref fMin, ref fMax, propertyAttribute.Min, propertyAttribute.Max);
+
+                minValue = Mathf.Clamp(Mathf.RoundToInt(fMin), Mathf.RoundToInt(propertyAttribute.Min), maxValue);
+                maxValue = Mathf.Clamp(Mathf.RoundToInt(fMax), minValue, Mathf.RoundToInt(propertyAttribute.Max));
+
+                property.vector2IntValue = new Vector2Int(minValue, maxValue);
+            }
         }
     }
 }
