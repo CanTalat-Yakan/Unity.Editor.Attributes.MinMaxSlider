@@ -43,7 +43,7 @@ namespace UnityEssentials
 
                 property.vector2Value = new Vector2(minValue, maxValue);
             }
-            else // Vector2Int
+            else if(isVector2Int)
             {
                 var range = property.vector2IntValue;
                 int minValue = range.x;
